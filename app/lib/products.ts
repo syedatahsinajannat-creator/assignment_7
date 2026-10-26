@@ -27,9 +27,6 @@ export type Product = {
 
 const API_URL = "https://openapi.programming-hero.com/api/bazardor";
 
-/**
- * Fetch all products from the API
- */
 export async function getProducts(): Promise<Product[]> {
   try {
     const response = await fetch(`${API_URL}/products`, {
@@ -41,8 +38,7 @@ export async function getProducts(): Promise<Product[]> {
     }
 
     const result = await response.json();
-    
-    // Handles both direct array responses or wrapped data structures (e.g., { data: [...] })
+
     const products: Product[] = Array.isArray(result) ? result : result.data || [];
     return products;
   } catch (error) {
@@ -51,9 +47,6 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
-/**
- * Fetch a single product by its numeric ID
- */
 export async function getProduct(id: number): Promise<Product | null> {
   try {
     const response = await fetch(`${API_URL}/products/${id}`, {
@@ -65,11 +58,20 @@ export async function getProduct(id: number): Promise<Product | null> {
     }
 
     const result = await response.json();
-    
-    // Handles wrapped or direct single object responses
+
     return result.data || result;
   } catch (error) {
     console.error(`Error fetching product with ID ${id}:`, error);
     return null;
   }
+}
+
+export async function getProductsByCategory(categorySlug: string): Promise<Product[]> {
+  const products = await getProducts();
+  if (!categorySlug || categorySlug === "all" || categorySlug === "সব পণ্য") {
+    return products;
+  }
+  return products.filter(
+    (p) => p.category.toLowerCase() === categorySlug.toLowerCase()
+  );
 }
