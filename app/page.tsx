@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProducts, type Product } from "@/lib/products";
+import { getProducts, type Product } from "./lib/products";
 
 const categories = ["সব পণ্য", "চাল", "ডাল", "তেল", "সবজি", "মাছ"];
 
