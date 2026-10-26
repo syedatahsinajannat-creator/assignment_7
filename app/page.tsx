@@ -1,8 +1,8 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
 import { getProducts, type Product } from "./lib/products";
+import Link from "next/link";
 
 const categories = ["সব পণ্য", "চাল", "ডাল", "তেল", "সবজি", "মাছ"];
 
@@ -130,9 +130,10 @@ export default function Home() {
             </p>
           ) : (
             filteredProducts.map((product) => (
-              <article
+              <Link
                 key={product.id}
-                className="rounded-xl border border-gray-200 bg-white p-5 transition hover:border-green-300 hover:shadow-sm"
+                href={`/products/${product.id}`}
+                className="rounded-xl border border-gray-200 bg-white p-5 transition hover:border-green-300 hover:shadow-sm block"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -181,7 +182,7 @@ export default function Home() {
                       : `${product.change.pct}%`}
                   </span>
                 </div>
-              </article>
+              </Link>
             ))
           )}
         </div>
