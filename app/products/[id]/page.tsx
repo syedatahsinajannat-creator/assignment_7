@@ -1,13 +1,6 @@
 import Link from "next/link";
-import { getProduct } from "@/lib/products"; // Adjust to "./lib/products" if lib is inside app
+import { getProduct, type Product, type Market } from "../../lib/products";
 import { notFound } from "next/navigation";
-import Link from "next/link";
-
-<Link key={product.id} href={`/products/${product.id}`}>
-  <div className="bg-white p-4 rounded-xl border border-gray-100 hover:shadow-md transition cursor-pointer">
-    { }
-  </div>
-</Link>
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -15,7 +8,7 @@ interface PageProps {
 
 export default async function ProductDetailsPage({ params }: PageProps) {
   const { id } = await params;
-  const product = await getProduct(id);
+  const product: Product | null = await getProduct(Number(id));
 
   if (!product) {
     notFound();
@@ -37,31 +30,31 @@ export default async function ProductDetailsPage({ params }: PageProps) {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b pb-4">
             <div>
               <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full">
-                {product.category}
+                {product.categoryNameBn || product.category}
               </span>
               <h1 className="text-2xl font-bold text-gray-800 mt-2">
-                {product.name}
+                {product.nameBn}
               </h1>
             </div>
             <div className="text-left md:text-right">
               <p className="text-3xl font-extrabold text-emerald-600">
-                ৳{product.currentPrice}{" "}
+                ৳{product.today}{" "}
                 <span className="text-sm text-gray-500 font-normal">
                   / {product.unit}
                 </span>
               </p>
-              {product.priceChange !== undefined && (
+              {product.change && (
                 <p
                   className={`text-sm font-semibold mt-1 ${
-                    product.priceChange > 0
+                    product.change.dir === "up"
                       ? "text-red-500"
-                      : product.priceChange < 0
+                      : product.change.dir === "down"
                       ? "text-emerald-500"
                       : "text-gray-500"
                   }`}
                 >
-                  {product.priceChange > 0 ? "▲" : product.priceChange < 0 ? "▼" : ""}{" "}
-                  {Math.abs(product.priceChange)}৳
+                  {product.change.dir === "up" ? "▲" : product.change.dir === "down" ? "▼" : ""}{" "}
+                  {product.change.pct}%
                 </p>
               )}
             </div>
@@ -74,13 +67,18 @@ export default async function ProductDetailsPage({ params }: PageProps) {
                 বিভিন্ন বাজারের দরদাম
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {product.markets.map((m, idx) => (
+                {product.markets.map((m: Market, idx: number) => (
                   <div
                     key={idx}
                     className="flex justify-between items-center p-3 bg-gray-50 rounded-lg border border-gray-100"
                   >
-                    <span className="text-gray-700 font-medium">{m.name}</span>
-                    <span className="font-bold text-gray-900">৳{m.price}</span>
+                    <div>
+                      <span className="text-gray-700 font-medium block">{m.market}</span>
+                      <span className="text-xs text-gray-500">{m.division}</span>
+                    </div>
+                    <span className="font-bold text-gray-900">
+                      ৳{m.min} - ৳{m.max}
+                    </span>
                   </div>
                 ))}
               </div>
